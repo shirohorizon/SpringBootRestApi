@@ -41,12 +41,19 @@ public class ProductService implements IProductService {
     }else {
       productEntity = productConverter.toEntity(productDTO);
     }
+
+    if (productDTO.getCategoryTitle() != null){
+      productEntity.setCategories(null);
+    }
     ProductEntity finalProductEntity = productEntity;
     productDTO.getCategoryTitle().forEach(c->{
       CategoryEntity categoryEntity = categoryRepository.findOneByTitle(c);
       finalProductEntity.getCategories().add(categoryEntity);
     });
-    productEntity = productRepository.save(finalProductEntity);
+    if (productDTO.getFilterNameDTOList() != null){
+      productEntity.getFilterNameList().removeAll(productEntity.getFilterNameList());
+      productEntity = productRepository.save(productEntity);
+    }
     ProductEntity finalProductEntity1 = productEntity;
     productDTO.getFilterNameDTOList().forEach(fn->{
       FilterNameEntity filterNameEntity = new FilterNameEntity();

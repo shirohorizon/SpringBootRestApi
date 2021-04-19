@@ -23,6 +23,9 @@ public class ProductConverter {
 
     public ProductDTO toDTO(ProductEntity entity){
         ProductDTO dto = new ProductDTO();
+        if (entity.getId() != null){
+            dto.setId(entity.getId());
+        }
         dto.setUserId(entity.getUserId());
         dto.setTitle(entity.getTitle());
         dto.setMetaTitle(entity.getMetaTitle());
@@ -33,6 +36,10 @@ public class ProductConverter {
         dto.setDiscount(entity.getDiscount());
         dto.setQuantity(entity.getQuantity());
         dto.setContent(entity.getContent());
+        dto.setCreatedDate(entity.getCreatedDate());
+        dto.setCreatedBy(entity.getCreatedBy());
+        dto.setModifiedDate(entity.getModifieddate());
+        dto.setModifiedBy(entity.getModifiedBy());
         return dto;
     }
 

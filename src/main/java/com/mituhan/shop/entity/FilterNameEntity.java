@@ -13,8 +13,8 @@ import java.util.List;
 public class FilterNameEntity extends BaseEntity implements Serializable {
     public static final long serialVersionUID = 1L;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    @JoinColumn(name = "product_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @JoinColumn(name = "product_id", nullable = true)
     private ProductEntity product;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "filterName", cascade = {CascadeType.ALL}, orphanRemoval = true)
