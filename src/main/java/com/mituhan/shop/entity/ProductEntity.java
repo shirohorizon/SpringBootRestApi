@@ -21,10 +21,13 @@ public class ProductEntity extends BaseEntity implements Serializable {
     )
     private List<CategoryEntity> categories = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "product", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<FilterNameEntity> filterNameList = new ArrayList<>();
 
-    @Column(name = "user_id", nullable = false)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "product", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<ProductImageEntity> productImageList = new ArrayList<>();
+
+    @Column(name = "user_id")
     private Long userId;
     @Column(name = "title", length = 75, nullable = false)
     private String title;

@@ -12,7 +12,7 @@ public class FilterValueEntity extends BaseEntity implements Serializable {
     public static final long serialVersionUID = 1L;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    @JoinColumn(name = "filter_name_id", insertable = false, updatable = false)
+    @JoinColumn(name = "filter_name_id")
     private FilterNameEntity filterName;
 
     @Column(name = "value", nullable = false)
