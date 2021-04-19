@@ -3,7 +3,6 @@ package com.mituhan.shop.api;
 import com.mituhan.shop.dto.ProductDTO;
 import com.mituhan.shop.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +26,11 @@ public class ProductAPI {
         return productService.save(model);
     }
 
+    @DeleteMapping("/product")
+    public void deleteProduct(@RequestBody Long[] productIds){
+        productService.delete(productIds);
+    }
+
     @GetMapping("/products")
     public List<ProductDTO> getProductList() {
         return null;
@@ -48,11 +52,7 @@ public class ProductAPI {
      */
 
 
-    @DeleteMapping("/product/{productId}")
-    public ResponseEntity deleteTodo(@PathVariable(name = "productId") Integer productId){
 
-        return null;
-    }
 
 
 

@@ -68,4 +68,11 @@ public class ProductService implements IProductService {
     });
     return productConverter.toDTO(productEntity);
   }
+
+    @Override
+    public void delete(Long[] ids) {
+        for (Long id: ids){
+            productRepository.deleteById(id);
+        }
+    }
 }
