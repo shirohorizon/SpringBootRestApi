@@ -14,10 +14,16 @@ public class ProductAPI {
     @Autowired
     private IProductService productService;
 
-    @PostMapping("/product")
+    @PostMapping(value = "/product")
     public ProductDTO createProduct(@RequestBody ProductDTO model) {
-        // Trả về response với STATUS CODE = 200 (OK)
-        // Body sẽ chứa thông tin về đối tượng product vừa được tạo.
+        return productService.save(model);
+    }
+
+    @PutMapping(value = "/product/{productId}")
+    public ProductDTO editProduct(@PathVariable(name = "productId") Long productId,
+                                  @RequestBody ProductDTO model){
+        model.setId(productId);
+        // Trả về đối tượng sau khi đã edit
         return productService.save(model);
     }
 
@@ -40,11 +46,7 @@ public class ProductAPI {
     @RequestBody nói với Spring Boot rằng hãy chuyển Json trong request body
     thành đối tượng productDTO
      */
-    @PutMapping("/product/{productId}")
-    public ProductDTO editProduct(@PathVariable(name = "productId") Integer productId,
-                         @RequestBody ProductDTO product){
-        // Trả về đối tượng sau khi đã edit
-        return null;    }
+
 
     @DeleteMapping("/product/{productId}")
     public ResponseEntity deleteTodo(@PathVariable(name = "productId") Integer productId){

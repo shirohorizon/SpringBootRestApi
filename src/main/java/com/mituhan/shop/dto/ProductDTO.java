@@ -2,11 +2,10 @@ package com.mituhan.shop.dto;
 
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class ProductDTO {
+public class ProductDTO extends AbstractDTO<ProductDTO>{
     private Long userId;
     private String title;
     private String metaTitle;
