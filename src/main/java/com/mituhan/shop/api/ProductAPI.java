@@ -1,60 +1,72 @@
 package com.mituhan.shop.api;
 
+import com.mituhan.shop.api.output.ProductOutput;
 import com.mituhan.shop.dto.ProductDTO;
+import com.mituhan.shop.entity.ProductEntity;
 import com.mituhan.shop.service.IProductService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Optional;
+
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class ProductAPI {
+
+    public static final Logger logger = LoggerFactory.getLogger(ProductAPI.class);
+
     @Autowired
     private IProductService productService;
 
-    @PostMapping(value = "/product")
-    public ProductDTO createProduct(@RequestBody ProductDTO model) {
-        return productService.save(model);
-    }
-
-    @PutMapping(value = "/product/{productId}")
-    public ProductDTO editProduct(@PathVariable(name = "productId") Long productId,
-                                  @RequestBody ProductDTO model){
-        model.setId(productId);
-        // Trả về đối tượng sau khi đã edit
-        return productService.save(model);
-    }
-
-    @DeleteMapping("/product")
-    public void deleteProduct(@RequestBody Long[] productIds){
-        productService.delete(productIds);
-    }
-
-    @GetMapping("/products")
-    public List<ProductDTO> getProductList() {
+    @GetMapping(value = "/products")
+    public ProductDTO showProductList() {
+        ProductOutput result = new ProductOutput();
         return null;
     }
-
-    /*
-    phần path URL bạn muốn lấy thông tin sẽ để trong ngoặc kép {}
-     */
-    @GetMapping("/product/{productId}")
-    public ProductDTO getProduct(@PathVariable(name = "productId") Long productId){
-        // @PathVariable lấy ra thông tin trong URL
-        // dựa vào tên của thuộc tính đã định nghĩa trong ngoặc kép /product/{productId}
-        return null;
+    @GetMapping(value = "/products1")
+    public ResponseEntity rootResponse() {
+        String welcomeMessage = "Welcome to the spring boot integration test sample api";
+        return new ResponseEntity<String>(welcomeMessage, HttpStatus.OK);
     }
 
-    /*
-    @RequestBody nói với Spring Boot rằng hãy chuyển Json trong request body
-    thành đối tượng productDTO
-     */
 
+    @PostMapping(value = "/products")
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO model) {
+        logger.info("Creating Product : {}", model);
+        try {
+            ProductDTO productDTO = productService.save(model);
+            return new ResponseEntity<>(productDTO, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
+    @PutMapping(value = "/products/{productId}")
+    public ResponseEntity<ProductDTO> editProduct(@PathVariable(name = "productId") Long productId,
+                                  @RequestBody ProductDTO model) {
+        Optional<ProductEntity> productDTO = productService.findById(productId);
+        if (productDTO.isPresent()){
+            model.setId(productId);
+            // Trả về đối tượng sau khi đã edit
+            return new ResponseEntity<>(productService.save(model), HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
-
-
-
+    @DeleteMapping("/products")
+    public ResponseEntity<HttpStatus> deleteProduct(@RequestBody Long[] productIds) {
+        try {
+            productService.delete(productIds);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

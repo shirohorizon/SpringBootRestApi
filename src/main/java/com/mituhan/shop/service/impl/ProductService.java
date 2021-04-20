@@ -12,7 +12,13 @@ import com.mituhan.shop.repository.FilterValueRepository;
 import com.mituhan.shop.repository.ProductRepository;
 import com.mituhan.shop.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService implements IProductService {
@@ -75,4 +81,34 @@ public class ProductService implements IProductService {
             productRepository.deleteById(id);
         }
     }
+
+  @Override
+  public Optional<ProductEntity> findById(Long id) {
+    return productRepository.findById(id);
+  }
+
+  @Override
+  public List<ProductDTO> findAll(String title, CategoryEntity category, Boolean published, Pageable pageable) {
+    List<ProductDTO> result = new ArrayList<>();
+    Page<ProductEntity> entities;
+    if (title != null && category == null){
+      entities = productRepository.findAllByTitleContainingAndPublished(title,published,pageable);
+    }else if(category!= null && title == null){
+      entities = productRepository.findAllByCategoriesAndPublished(category, published,pageable);
+    }else if(title != null && category != null){
+      entities = productRepository.findAllByCategoriesAndPublishedAndTitleContaining(title,category,published,pageable);
+    }else {
+      entities = productRepository.findAllByPublished(published,pageable);
+    }
+    entities.forEach(p->{
+      result.add(productConverter.toDTO(p));
+    });
+    return result;
+  }
+
+
+  @Override
+  public int totalItem() {
+    return (int) productRepository.count();
+  }
 }

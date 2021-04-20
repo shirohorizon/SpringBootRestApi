@@ -1,10 +1,12 @@
 package com.mituhan.shop.entity;
 
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -47,4 +49,8 @@ public class ProductEntity extends BaseEntity implements Serializable {
     private Integer quantity;
     @Column(name = "content", columnDefinition = "TEXT NULL")
     private String content;
+    @Column(name = "published")
+    private Boolean published;
+    @Column(name = "publisheddate", updatable = false)
+    private Date publishedDate;
 }
