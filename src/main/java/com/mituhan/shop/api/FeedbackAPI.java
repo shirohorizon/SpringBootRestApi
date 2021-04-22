@@ -1,9 +1,7 @@
 package com.mituhan.shop.api;
 
 import com.mituhan.shop.dto.FeedbackDTO;
-import com.mituhan.shop.dto.ProductDTO;
 import com.mituhan.shop.entity.FeedbackEntity;
-import com.mituhan.shop.entity.ProductEntity;
 import com.mituhan.shop.service.IFeedbackService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +21,7 @@ public class FeedbackAPI {
     @Autowired
     private IFeedbackService feedbackService;
 
-    @PostMapping(value = "/products")
+    @PostMapping(value = "/feedback")
     public ResponseEntity<FeedbackDTO> createProduct(@RequestBody FeedbackDTO model) {
         logger.info("Creating Feedback : {}", model);
         try {
@@ -34,20 +32,24 @@ public class FeedbackAPI {
         }
     }
 
-    @PutMapping(value = "/products/{productId}")
-    public ResponseEntity<FeedbackDTO> editProduct(@PathVariable(name = "productId") Long productId,
+    @PutMapping(value = "/feedback/{feedbackId}")
+    public ResponseEntity<FeedbackDTO> editProduct(@PathVariable(name = "feedbackId") Long feedbackId,
                                                   @RequestBody FeedbackDTO model) {
-        Optional<FeedbackEntity> feedbackEntity = feedbackService.findById(productId);
-        if (feedbackEntity.isPresent()){
-            model.setId(productId);
-            // Trả về đối tượng sau khi đã edit
-            return new ResponseEntity<>(feedbackService.save(model), HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            Optional<FeedbackEntity> feedbackEntity = feedbackService.findById(feedbackId);
+            if (feedbackEntity.isPresent()){
+                model.setId(feedbackId);
+                // Trả về đối tượng sau khi đã edit
+                return new ResponseEntity<>(feedbackService.save(model), HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @DeleteMapping("/products")
+    @DeleteMapping("/feedback")
     public ResponseEntity<HttpStatus> deleteProduct(@RequestBody Long[] ids) {
         try {
             feedbackService.delete(ids);

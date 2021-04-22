@@ -35,13 +35,17 @@ public class CartAPI {
     @PutMapping(value = "/carts/{cartId}")
     public ResponseEntity<CartDTO> editProduct(@PathVariable(name = "cartId") Long cartId,
                                                   @RequestBody CartDTO model) {
-        Optional<CartEntity> cartEntity = cartService.findById(cartId);
-        if (cartEntity.isPresent()){
-            model.setId(cartId);
-            // Trả về đối tượng sau khi đã edit
-            return new ResponseEntity<>(cartService.save(model), HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            Optional<CartEntity> cartEntity = cartService.findById(cartId);
+            if (cartEntity.isPresent()){
+                model.setId(cartId);
+                // Trả về đối tượng sau khi đã edit
+                return new ResponseEntity<>(cartService.save(model), HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

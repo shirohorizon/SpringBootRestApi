@@ -1,5 +1,6 @@
 package com.mituhan.shop.service.impl;
 
+import com.mituhan.shop.converter.FeedbackConverter;
 import com.mituhan.shop.dto.FeedbackDTO;
 import com.mituhan.shop.entity.FeedbackEntity;
 import com.mituhan.shop.entity.UserEntity;
@@ -15,6 +16,9 @@ public class FeedbackService implements IFeedbackService {
 
     @Autowired
     private FeedbackRepository feedbackRepository;
+
+    @Autowired
+    private FeedbackConverter feedbackConverter;
 
     @Override
     public FeedbackDTO save(FeedbackDTO objectDTO) {

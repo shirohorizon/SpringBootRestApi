@@ -37,13 +37,17 @@ public class OrderAPI {
     @PutMapping(value = "/orders/{orderId}")
     public ResponseEntity<OrderDTO> editProduct(@PathVariable(name = "orderId") Long orderId,
                                                   @RequestBody OrderDTO model) {
-        Optional<OrderEntity> orderEntity = orderService.findById(orderId);
-        if (orderEntity.isPresent()){
-            model.setId(orderId);
-            // Trả về đối tượng sau khi đã edit
-            return new ResponseEntity<>(orderService.save(model), HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            Optional<OrderEntity> orderEntity = orderService.findById(orderId);
+            if (orderEntity.isPresent()){
+                model.setId(orderId);
+                // Trả về đối tượng sau khi đã edit
+                return new ResponseEntity<>(orderService.save(model), HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

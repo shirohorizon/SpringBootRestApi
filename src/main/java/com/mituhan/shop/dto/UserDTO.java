@@ -17,5 +17,5 @@ public class UserDTO extends AbstractDTO<UserDTO>{
     private Integer vendor;
     private Integer status;
     private Date lastLogin;
-    private List<RoleDTO> roleList = new ArrayList<>();
+    private List<String> roleName;
 }

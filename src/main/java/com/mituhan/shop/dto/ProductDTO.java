@@ -1,10 +1,17 @@
 package com.mituhan.shop.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductDTO extends AbstractDTO<ProductDTO>{
     private Long userId;
     private String title;
@@ -16,6 +23,6 @@ public class ProductDTO extends AbstractDTO<ProductDTO>{
     private Float discount;
     private Integer quantity;
     private String content;
-    private List<String> categoryTitle;
-    private List<FilterNameDTO> filterNameDTOList;
+    private List<String> categoryTitle = new ArrayList<>();
+    private List<FilterNameDTO> filterNameDTOList = new ArrayList<>();
 }

@@ -1,6 +1,9 @@
 package com.mituhan.shop.service.impl;
 
+import com.mituhan.shop.api.input.ProductRequest;
+import com.mituhan.shop.api.output.ProductResponse;
 import com.mituhan.shop.converter.ProductConverter;
+import com.mituhan.shop.dto.FilterNameDTO;
 import com.mituhan.shop.dto.ProductDTO;
 import com.mituhan.shop.entity.CategoryEntity;
 import com.mituhan.shop.entity.FilterNameEntity;
@@ -12,13 +15,12 @@ import com.mituhan.shop.repository.FilterValueRepository;
 import com.mituhan.shop.repository.ProductRepository;
 import com.mituhan.shop.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class ProductService implements IProductService {
@@ -38,42 +40,6 @@ public class ProductService implements IProductService {
   @Autowired
   private FilterValueRepository filterValueRepository;
 
-  @Override
-  public ProductDTO save(ProductDTO productDTO) {
-    ProductEntity productEntity = new ProductEntity();
-    if(productDTO.getId() != null){
-      ProductEntity oldProductEntity = productRepository.getOne(productDTO.getId());
-      productEntity = productConverter.toEntity(productDTO, oldProductEntity);
-    }else {
-      productEntity = productConverter.toEntity(productDTO);
-    }
-
-    if (productDTO.getCategoryTitle() != null){
-      productEntity.setCategories(null);
-    }
-    ProductEntity finalProductEntity = productEntity;
-    productDTO.getCategoryTitle().forEach(c->{
-      CategoryEntity categoryEntity = categoryRepository.findOneByTitle(c);
-      finalProductEntity.getCategories().add(categoryEntity);
-    });
-    if (productDTO.getFilterNameDTOList() != null){
-      productEntity.getFilterNameList().removeAll(productEntity.getFilterNameList());
-      productEntity = productRepository.save(productEntity);
-    }
-    ProductEntity finalProductEntity1 = productEntity;
-    productDTO.getFilterNameDTOList().forEach(fn->{
-      FilterNameEntity filterNameEntity = new FilterNameEntity();
-      filterNameEntity.setName(fn.getFilterName());
-      filterNameEntity.setProduct(finalProductEntity1);
-      fn.getFilterValue().forEach(fv->{
-        FilterValueEntity filterValueEntity = new FilterValueEntity();
-        filterValueEntity.setValue(fv);
-        filterValueEntity.setFilterName(filterNameEntity);
-        filterValueRepository.save(filterValueEntity);
-      });
-    });
-    return productConverter.toDTO(productEntity);
-  }
 
     @Override
     public void delete(Long[] ids) {
@@ -83,27 +49,98 @@ public class ProductService implements IProductService {
     }
 
   @Override
-  public Optional<ProductEntity> findById(Long id) {
-    return productRepository.findById(id);
+  public ProductResponse findById(Long id) {
+    ProductResponse response = new ProductResponse();
+    ProductEntity entity = productRepository.findById(id).get();
+    ProductRequest request = new ProductRequest();
+    request.getFilters().addAll(productConverter.toDTO(entity.getFilterNameList()));
+    request.setProduct(productConverter.toDTO(entity));
+    request.getCategoryTitles().addAll(productConverter.toList(entity.getCategories()));
+    response.getProducts().add(request);
+    return response;
   }
 
+
   @Override
-  public List<ProductDTO> findAll(String title, CategoryEntity category, Boolean published, Pageable pageable) {
+  public List<ProductDTO> findAll() {
     List<ProductDTO> result = new ArrayList<>();
-    Page<ProductEntity> entities;
-    if (title != null && category == null){
-      entities = productRepository.findAllByTitleContainingAndPublished(title,published,pageable);
-    }else if(category!= null && title == null){
-      entities = productRepository.findAllByCategoriesAndPublished(category, published,pageable);
-    }else if(title != null && category != null){
-      entities = productRepository.findAllByCategoriesAndPublishedAndTitleContaining(title,category,published,pageable);
-    }else {
-      entities = productRepository.findAllByPublished(published,pageable);
-    }
-    entities.forEach(p->{
+    productRepository.findAll().forEach(p->{
       result.add(productConverter.toDTO(p));
     });
     return result;
+  }
+
+  @Override
+  @Transactional
+  public ProductResponse save(ProductRequest request) {
+    ProductResponse response = new ProductResponse();
+    ProductEntity entity = new ProductEntity();
+    ProductEntity oldEntity = new ProductEntity();
+    //check product Id -> post or put
+    if (request.getProduct().getId() != null){
+      //put
+      oldEntity = productRepository.findById(request.getProduct().getId()).get();
+      oldEntity.getFilterNameList().removeAll(oldEntity.getFilterNameList());
+//      productRepository.save(oldEntity);
+//      oldEntity = productRepository.findById(request.getProduct().getId()).get();
+      entity = productConverter.toEntity(request.getProduct(), oldEntity);
+    }else {
+      //post
+      entity = productConverter.toEntity(request.getProduct());
+    }
+    //add category to product
+    List<CategoryEntity> newCategory = new ArrayList<>();
+    request.getCategoryTitles().forEach(c->{
+      //get list category
+      newCategory.add(categoryRepository.findOneByTitle(c));
+    });
+    entity.getCategories().removeAll(newCategory);
+    entity.getCategories().addAll(newCategory);
+
+    //add filter to product
+    //delete old filter by entity
+    List<FilterNameEntity> fnEntities = new ArrayList<>();
+    ProductEntity finalEntity = entity;
+    request.getFilters().forEach(fn->{
+      FilterNameEntity fnEntity = new FilterNameEntity();
+      fnEntity.setName(fn.getFilterName());
+      fnEntity.setProduct(finalEntity);
+      if (finalEntity.getId() != null){
+        //put
+        List<FilterValueEntity> fvEntities = new ArrayList<>();
+        fn.getFilterValue().forEach(fv->{
+          FilterValueEntity fvEntity = new FilterValueEntity();
+          fvEntity.setValue(fv);
+          fvEntity.setFilterName(fnEntity);
+          fvEntities.add(fvEntity);
+        });
+        fnEntity.setFilterValueList(fvEntities);
+        finalEntity.getFilterNameList().add(fnEntity);
+        filterNameRepository.save(fnEntity);
+        fnEntities.add(fnEntity);
+      }else {
+        //post
+        List<FilterValueEntity> fvEntities = new ArrayList<>();
+        fn.getFilterValue().forEach(fv->{
+          FilterValueEntity fvEntity = new FilterValueEntity();
+          fvEntity.setValue(fv);
+          fvEntity.setFilterName(fnEntity);
+          fvEntities.add(fvEntity);
+        });
+        fnEntity.setFilterValueList(fvEntities);
+        fnEntities.add(fnEntity);
+      }
+    });
+    if (finalEntity.getId() == null){
+      finalEntity.setFilterNameList(fnEntities);
+    }
+    entity = productRepository.save(finalEntity);
+    ProductRequest request1 = new ProductRequest();
+    request1.setProduct(productConverter.toDTO(entity));
+    request1.getFilters().addAll(productConverter.toDTO(entity.getFilterNameList()));
+    request1.getCategoryTitles().addAll(productConverter.toList(entity.getCategories()));
+    response.getProducts().add(request1);
+    return response;
   }
 
 

@@ -1,5 +1,6 @@
 package com.mituhan.shop.service.impl;
 
+import com.mituhan.shop.converter.CartConverter;
 import com.mituhan.shop.dto.CartDTO;
 import com.mituhan.shop.entity.CartEntity;
 import com.mituhan.shop.entity.UserEntity;
@@ -19,6 +20,9 @@ public class CartService implements ICartService {
 
     @Autowired
     private CartItemRepository cartItemRepository;
+
+    @Autowired
+    private CartConverter cartConverter;
 
     @Override
     public CartDTO save(CartDTO objectDTO) {

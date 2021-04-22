@@ -1,6 +1,9 @@
 package com.mituhan.shop.api;
 
-import com.mituhan.shop.api.output.ProductOutput;
+import com.mituhan.shop.api.input.ProductRequest;
+import com.mituhan.shop.api.output.ProductResponse;
+import com.mituhan.shop.converter.ProductConverter;
+import com.mituhan.shop.dto.FilterNameDTO;
 import com.mituhan.shop.dto.ProductDTO;
 import com.mituhan.shop.entity.ProductEntity;
 import com.mituhan.shop.service.IProductService;
@@ -11,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -23,39 +27,43 @@ public class ProductAPI {
     @Autowired
     private IProductService productService;
 
+    @Autowired
+    private ProductConverter productConverter;
+
     @GetMapping(value = "/products")
-    public ProductDTO showProductList() {
-        ProductOutput result = new ProductOutput();
-        return null;
-    }
-    @GetMapping(value = "/products1")
-    public ResponseEntity rootResponse() {
-        String welcomeMessage = "Welcome to the spring boot integration test sample api";
-        return new ResponseEntity<String>(welcomeMessage, HttpStatus.OK);
+    public ResponseEntity<List<ProductDTO>> showProductList() {
+        return new ResponseEntity<>(productService.findAll(), HttpStatus.OK);
     }
 
+    @GetMapping(value = "/products/{productId}")
+    public ResponseEntity<ProductResponse> showProduct(@PathVariable(name = "productId") Long productId) {
+        return new ResponseEntity<ProductResponse>(productService.findById(productId), HttpStatus.OK);
+    }
 
     @PostMapping(value = "/products")
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO model) {
+    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest model) {
         logger.info("Creating Product : {}", model);
         try {
-            ProductDTO productDTO = productService.save(model);
-            return new ResponseEntity<>(productDTO, HttpStatus.CREATED);
+            return new ResponseEntity<>(productService.save(model) , HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping(value = "/products/{productId}")
-    public ResponseEntity<ProductDTO> editProduct(@PathVariable(name = "productId") Long productId,
-                                  @RequestBody ProductDTO model) {
-        Optional<ProductEntity> productDTO = productService.findById(productId);
-        if (productDTO.isPresent()){
-            model.setId(productId);
-            // Trả về đối tượng sau khi đã edit
-            return new ResponseEntity<>(productService.save(model), HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<ProductResponse> editProduct(@PathVariable(name = "productId") Long productId,
+                                  @RequestBody ProductRequest model) {
+        try {
+            ProductResponse isProductExist = productService.findById(productId);
+            if (isProductExist.getProducts() != null){
+                model.getProduct().setId(productId);
+                // Trả về đối tượng sau khi đã edit
+                return new ResponseEntity<>(productService.save(model), HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

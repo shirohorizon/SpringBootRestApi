@@ -1,5 +1,6 @@
 package com.mituhan.shop.service.impl;
 
+import com.mituhan.shop.converter.CategoryConverter;
 import com.mituhan.shop.dto.CategoryDTO;
 import com.mituhan.shop.entity.CategoryEntity;
 import com.mituhan.shop.entity.UserEntity;
@@ -15,6 +16,9 @@ public class CategoryService implements ICategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private CategoryConverter categoryConverter;
 
     @Override
     public CategoryDTO save(CategoryDTO objectDTO) {

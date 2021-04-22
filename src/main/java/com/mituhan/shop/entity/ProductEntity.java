@@ -23,10 +23,10 @@ public class ProductEntity extends BaseEntity implements Serializable {
     )
     private List<CategoryEntity> categories = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(targetEntity = FilterNameEntity.class, fetch = FetchType.LAZY, mappedBy = "product", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<FilterNameEntity> filterNameList = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "product", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(targetEntity = ProductImageEntity.class, fetch = FetchType.EAGER, mappedBy = "product", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<ProductImageEntity> productImageList = new ArrayList<>();
 
     @Column(name = "user_id")
@@ -49,8 +49,8 @@ public class ProductEntity extends BaseEntity implements Serializable {
     private Integer quantity;
     @Column(name = "content", columnDefinition = "TEXT NULL")
     private String content;
-    @Column(name = "published")
-    private Boolean published;
-    @Column(name = "publisheddate", updatable = false)
+    @Column(name = "published", columnDefinition = "TINYINT(1) NULL DEFAULT 0")
+    private Integer published;
+    @Column(name = "publisheddate")
     private Date publishedDate;
 }

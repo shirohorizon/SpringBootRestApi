@@ -1,8 +1,14 @@
 package com.mituhan.shop.converter;
 
+import com.mituhan.shop.dto.FilterNameDTO;
 import com.mituhan.shop.dto.ProductDTO;
+import com.mituhan.shop.entity.CategoryEntity;
+import com.mituhan.shop.entity.FilterNameEntity;
 import com.mituhan.shop.entity.ProductEntity;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class ProductConverter {
@@ -55,5 +61,27 @@ public class ProductConverter {
         entity.setQuantity(dto.getQuantity());
         entity.setContent(dto.getContent());
         return entity;
+    }
+
+
+    public List<FilterNameDTO> toDTO(List<FilterNameEntity> entity){
+        List<FilterNameDTO> dto = new ArrayList<>();
+        entity.forEach(e->{
+            FilterNameDTO filterNameDTO = new FilterNameDTO();
+            filterNameDTO.setFilterName(e.getName());
+            e.getFilterValueList().forEach(fv->{
+                filterNameDTO.getFilterValue().add(fv.getValue());
+            });
+            dto.add(filterNameDTO);
+        });
+        return dto;
+    }
+
+    public List<String> toList(List<CategoryEntity> entities){
+        List<String> list = new ArrayList<>();
+        entities.forEach(c->{
+            list.add(c.getTitle());
+        });
+        return list;
     }
 }

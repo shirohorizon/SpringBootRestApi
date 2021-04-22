@@ -1,8 +1,8 @@
 package com.mituhan.shop.service.impl;
 
+import com.mituhan.shop.converter.OrderConverter;
 import com.mituhan.shop.dto.OrderDTO;
 import com.mituhan.shop.entity.OrderEntity;
-import com.mituhan.shop.entity.UserEntity;
 import com.mituhan.shop.repository.OrderItemRepository;
 import com.mituhan.shop.repository.OrderRepository;
 import com.mituhan.shop.service.IOrderService;
@@ -19,6 +19,9 @@ public class OrderService implements IOrderService {
 
     @Autowired
     private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private OrderConverter orderConverter;
 
     @Override
     public OrderDTO save(OrderDTO objectDTO) {

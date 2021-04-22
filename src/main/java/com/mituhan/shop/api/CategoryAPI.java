@@ -35,13 +35,17 @@ public class CategoryAPI {
     @PutMapping(value = "/categories/{categoryId}")
     public ResponseEntity<CategoryDTO> editProduct(@PathVariable(name = "categoryId") Long categoryId,
                                                   @RequestBody CategoryDTO model) {
-        Optional<CategoryEntity> categoryEntity = categoryService.findById(categoryId);
-        if (categoryEntity.isPresent()){
-            model.setId(categoryId);
-            // Trả về đối tượng sau khi đã edit
-            return new ResponseEntity<>(categoryService.save(model), HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            Optional<CategoryEntity> categoryEntity = categoryService.findById(categoryId);
+            if (categoryEntity.isPresent()){
+                model.setId(categoryId);
+                // Trả về đối tượng sau khi đã edit
+                return new ResponseEntity<>(categoryService.save(model), HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

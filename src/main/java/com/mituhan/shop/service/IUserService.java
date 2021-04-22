@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface IUserService extends AbstractService<UserDTO>{
     Optional<UserEntity> findById(Long id);
+    Boolean isUserExist(UserDTO userDTO);
 }

@@ -1,5 +1,6 @@
 package com.mituhan.shop.service.impl;
 
+import com.mituhan.shop.converter.ContactConverter;
 import com.mituhan.shop.dto.ContactDTO;
 import com.mituhan.shop.entity.ContactEntity;
 import com.mituhan.shop.entity.UserEntity;
@@ -15,6 +16,9 @@ public class ContactService implements IContactService {
 
     @Autowired
     private ContactRepository contactRepository;
+
+    @Autowired
+    private ContactConverter contactConverter;
 
     @Override
     public ContactDTO save(ContactDTO objectDTO) {
