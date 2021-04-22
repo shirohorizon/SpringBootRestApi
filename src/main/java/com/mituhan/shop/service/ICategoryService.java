@@ -5,6 +5,6 @@ import com.mituhan.shop.entity.CategoryEntity;
 
 import java.util.Optional;
 
-public interface ICategoryService extends AbstractService<CategoryDTO>{
+public interface ICategoryService extends BaseService<CategoryDTO> {
     Optional<CategoryEntity> findById(Long id);
 }

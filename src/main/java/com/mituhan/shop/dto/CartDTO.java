@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class CartDTO extends AbstractDTO<CartDTO>{
+public class CartDTO extends BaseDTO<CartDTO> {
     private Long userId;
     private Integer status;
     private String fullName;

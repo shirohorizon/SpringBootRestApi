@@ -1,6 +1,7 @@
 package com.mituhan.shop.service;
 
-public interface AbstractService<T> {
+public interface BaseService<T> {
     void delete(Long[] ids);
     int totalItem();
+    T save(T objectDTO);
 }

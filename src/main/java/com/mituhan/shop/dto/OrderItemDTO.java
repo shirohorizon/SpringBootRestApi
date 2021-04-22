@@ -4,7 +4,7 @@ import lombok.Data;
 
 
 @Data
-public class OrderItemDTO extends AbstractDTO<OrderItemDTO>{
+public class OrderItemDTO extends BaseDTO<OrderItemDTO> {
     private Long productId;
     private Long orderId;
     private String sku;

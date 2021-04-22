@@ -4,7 +4,7 @@ import lombok.Data;
 
 
 @Data
-public class FeedbackDTO extends AbstractDTO<FeedbackDTO>{
+public class FeedbackDTO extends BaseDTO<FeedbackDTO> {
     private String fullName;
     private String mobile;
     private String content;

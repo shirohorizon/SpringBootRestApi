@@ -3,7 +3,7 @@ package com.mituhan.shop.dto;
 import lombok.Data;
 
 @Data
-public class CartItemDTO extends AbstractDTO<CartItemDTO>{
+public class CartItemDTO extends BaseDTO<CartItemDTO> {
     private Long productId;
     private Long cartId;
     private String sku;

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class OrderDTO extends AbstractDTO<OrderDTO>{
+public class OrderDTO extends BaseDTO<OrderDTO> {
     private Long userId;
     private Integer status;
     private Float subTotal;

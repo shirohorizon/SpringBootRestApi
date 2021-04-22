@@ -15,11 +15,14 @@ import com.mituhan.shop.repository.FilterValueRepository;
 import com.mituhan.shop.repository.ProductRepository;
 import com.mituhan.shop.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -62,12 +65,20 @@ public class ProductService implements IProductService {
 
 
   @Override
-  public List<ProductDTO> findAll() {
-    List<ProductDTO> result = new ArrayList<>();
-    productRepository.findAll().forEach(p->{
-      result.add(productConverter.toDTO(p));
+  public ProductResponse findAll(String title, Pageable pageable) {
+    ProductResponse response = new ProductResponse();
+    Page<ProductEntity> page = productRepository.findAllByTitleContaining(title, pageable);
+    response.setTotal_page(page.getTotalPages());
+    response.setPage(page.getNumber()+1);
+    List<ProductEntity> entities = page.getContent();
+    entities.forEach(e->{
+      ProductRequest request = new ProductRequest();
+      request.setProduct(productConverter.toDTO(e));
+      request.setFilters(productConverter.toDTO(e.getFilterNameList()));
+      request.setCategoryTitles(productConverter.toList(e.getCategories()));
+      response.getProducts().add(request);
     });
-    return result;
+    return response;
   }
 
   @Override
@@ -147,5 +158,10 @@ public class ProductService implements IProductService {
   @Override
   public int totalItem() {
     return (int) productRepository.count();
+  }
+
+  @Override
+  public ProductDTO save(ProductDTO objectDTO) {
+    return null;
   }
 }

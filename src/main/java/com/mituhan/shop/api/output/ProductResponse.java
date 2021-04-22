@@ -16,5 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductResponse {
+    private int page;
+    private int total_page;
     private List<ProductRequest> products = new ArrayList<>();
 }

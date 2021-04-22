@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-public class AbstractDTO<T> {
+public class BaseDTO<T> {
     private Long id;
     private String createdBy;
     private Date createdDate;

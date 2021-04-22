@@ -10,6 +10,9 @@ import com.mituhan.shop.service.IProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,13 +34,27 @@ public class ProductAPI {
     private ProductConverter productConverter;
 
     @GetMapping(value = "/products")
-    public ResponseEntity<List<ProductDTO>> showProductList() {
-        return new ResponseEntity<>(productService.findAll(), HttpStatus.OK);
+    public ResponseEntity<ProductResponse> showProductList(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "page_size",defaultValue = "10") int page_size,
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        try {
+            Pageable paging = PageRequest.of(page-1,page_size, Sort.by(sortBy));
+            ProductResponse response = productService.findAll(keyword, paging);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping(value = "/products/{productId}")
     public ResponseEntity<ProductResponse> showProduct(@PathVariable(name = "productId") Long productId) {
-        return new ResponseEntity<ProductResponse>(productService.findById(productId), HttpStatus.OK);
+        try {
+            return new ResponseEntity<ProductResponse>(productService.findById(productId), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping(value = "/products")
@@ -57,7 +74,6 @@ public class ProductAPI {
             ProductResponse isProductExist = productService.findById(productId);
             if (isProductExist.getProducts() != null){
                 model.getProduct().setId(productId);
-                // Trả về đối tượng sau khi đã edit
                 return new ResponseEntity<>(productService.save(model), HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);

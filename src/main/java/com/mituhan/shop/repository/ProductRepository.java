@@ -17,10 +17,6 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends CrudRepository<ProductEntity, Long>, JpaRepository<ProductEntity, Long>,
         PagingAndSortingRepository<ProductEntity, Long> {
-    ProductEntity findProductEntityById(Long id);
+    Page<ProductEntity> findAllByTitleContaining(String title, Pageable pageable);
 
-    Page<ProductEntity> findAllByPublished(Boolean published, Pageable pageable);
-    Page<ProductEntity> findAllByTitleContainingAndPublished(String title,Boolean published, Pageable pageable);
-    Page<ProductEntity> findAllByCategoriesAndPublished(CategoryEntity category, Boolean published, Pageable pageable);
-    Page<ProductEntity> findAllByCategoriesAndPublishedAndTitleContaining(String title,CategoryEntity category, Boolean published, Pageable pageable);
 }

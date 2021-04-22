@@ -5,6 +5,6 @@ import com.mituhan.shop.entity.OrderEntity;
 
 import java.util.Optional;
 
-public interface IOrderService extends AbstractService<OrderDTO>{
+public interface IOrderService extends BaseService<OrderDTO> {
     Optional<OrderEntity> findById(Long id);
 }

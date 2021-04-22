@@ -5,7 +5,7 @@ import com.mituhan.shop.entity.UserEntity;
 
 import java.util.Optional;
 
-public interface IUserService extends AbstractService<UserDTO>{
+public interface IUserService extends BaseService<UserDTO> {
     Optional<UserEntity> findById(Long id);
     Boolean isUserExist(UserDTO userDTO);
 }

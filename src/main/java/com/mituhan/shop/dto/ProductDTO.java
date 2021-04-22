@@ -12,7 +12,7 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductDTO extends AbstractDTO<ProductDTO>{
+public class ProductDTO extends BaseDTO<ProductDTO> {
     private Long userId;
     private String title;
     private String metaTitle;
@@ -23,6 +23,4 @@ public class ProductDTO extends AbstractDTO<ProductDTO>{
     private Float discount;
     private Integer quantity;
     private String content;
-    private List<String> categoryTitle = new ArrayList<>();
-    private List<FilterNameDTO> filterNameDTOList = new ArrayList<>();
 }
